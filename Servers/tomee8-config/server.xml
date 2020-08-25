@@ -155,7 +155,7 @@
              Note: The pattern used is equivalent to using pattern="common" -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs" pattern="%h %l %u %t &quot;%r&quot; %s %b" prefix="localhost_access_log" suffix=".txt"/>
 
-      <Context docBase="how-to-write-cdi-extension" path="/extension" reloadable="true" source="org.eclipse.jst.jee.server:how-to-write-cdi-extension"/></Host>
+      <Context docBase="study-cdi-aop" path="/aspect" reloadable="true" source="org.eclipse.jst.jee.server:study-cdi-aop"/></Host>
     </Engine>
   </Service>
 </Server>
