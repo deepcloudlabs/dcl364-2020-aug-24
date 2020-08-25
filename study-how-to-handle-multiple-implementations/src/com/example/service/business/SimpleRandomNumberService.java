@@ -2,7 +2,6 @@ package com.example.service.business;
 
 import java.util.Random;
 
-import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
