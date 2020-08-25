@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 import com.example.imdb.entity.Director;
 import com.example.imdb.entity.Genre;
@@ -22,8 +23,19 @@ import com.example.imdb.service.SequenceService;
  * @author Binnur Kurt
  *
  */
-@Named
-@Singleton
+// CDI Bean:         // Spring Bean
+@Named               // @Component/@Service/@Repository
+@Singleton           // @Scope("session")/@Scope("request")
+//@RequestScoped        Spring Boot: @RequestScope/@SessionScope
+//@SessionScoped
+//@ApplicationScoped
+//@ConversationScoped
+
+// EJB Components 
+//    i) Singleton 
+//   ii) Stateless Session Bean
+//  iii) Stateful Session Bean
+//@Stateless 
 public class InMemoryMovieService implements MovieService { // Thread-safe
 	@Inject // dependency injection (2)
 	private SequenceService sequenceSrv; // dependency
@@ -1520,6 +1532,7 @@ public class InMemoryMovieService implements MovieService { // Thread-safe
 	}
 
 	@Override
+	@Transactional // JTA
 	public Collection<Movie> findAllMoviesByYearRange(int fromYear, int toYear) {
 		Collection<Movie> resultList = new ArrayList<>();
 		for (Movie movie : movies.values()) {

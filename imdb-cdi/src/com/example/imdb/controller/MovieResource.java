@@ -14,7 +14,7 @@ import com.example.imdb.service.MovieService;
 // http://localhost:5100/imdb/api/v1/movies
 @Path("/movies")
 public class MovieResource {
-	@Inject private MovieService movieSrv;
+	@Inject private MovieService movieSrv; // loosely-coupled
 	
     // http://localhost:5100/imdb/api/v1/movies?from=1970&to=1979
 	@GET
@@ -22,6 +22,7 @@ public class MovieResource {
 	public Collection<Movie> getMovies(
 			@QueryParam("from") int from, 
 			@QueryParam("to") int to){
+		System.err.println(movieSrv.getClass());
 		return movieSrv.findAllMoviesByYearRange(from, to);
 	}
 }
