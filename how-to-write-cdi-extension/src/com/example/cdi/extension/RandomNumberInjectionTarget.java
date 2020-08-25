@@ -1,6 +1,5 @@
 package com.example.cdi.extension;
 
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
