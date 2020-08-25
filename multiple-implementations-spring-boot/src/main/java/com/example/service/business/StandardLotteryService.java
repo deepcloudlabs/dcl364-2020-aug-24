@@ -1,37 +1,22 @@
 package com.example.service.business;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.service.LotteryService;
 import com.example.service.RandomNumberService;
 
-@Singleton
+@Service
 public class StandardLotteryService implements LotteryService {
-	@Inject
-	@Any
-	// @Standard (1)
-	private Instance<RandomNumberService> instances;
+	@Autowired
 	private List<RandomNumberService> randomNumberServices;
 	private AtomicInteger counter= new AtomicInteger(0);
-	
-	@PostConstruct
-	public void init() {
-		// selection strategy among multiple implementations
-		// Spring Boot @ConditionalOnXYZ
-		randomNumberServices = new ArrayList<>();
-		instances.forEach(randomNumberServices::add);
-	}
-	
+		
 	@Override
 	public List<Integer> draw(int max, int size) {
 		var index = counter.getAndIncrement() % randomNumberServices.size();

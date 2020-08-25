@@ -2,17 +2,13 @@ package com.example.service.business;
 
 import java.util.Random;
 
-import javax.enterprise.inject.Alternative;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import com.example.service.RandomNumberService;
 
-//@Stateless
-//@Standard
-@Named
-@Singleton
-//@Alternative
+@Service
+@ConditionalOnProperty(name = "type", havingValue = "simple")
 public class SimpleRandomNumberService implements RandomNumberService {
 	private Random random = new Random();
 
