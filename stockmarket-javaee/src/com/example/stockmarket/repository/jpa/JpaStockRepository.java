@@ -3,6 +3,7 @@ package com.example.stockmarket.repository.jpa;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -36,8 +37,11 @@ public class JpaStockRepository implements StockRepository {
 		return stock;
 	}
 
+	// 1. Persistence Context (Heap) -> Managed Entity
+	//    Dirty -> Transactional Method -> Bulk Update
+	// 2. MANDATORY -> @Transactional
 	@Override
-	@Transactional
+	@Transactional(value=TxType.REQUIRES_NEW)
 	public Stock update(Stock entity) {
 		var symbol = entity.getSymbol();
 		var managedStock = entityManager.find(Stock.class, symbol);
@@ -45,6 +49,14 @@ public class JpaStockRepository implements StockRepository {
 			throw new IllegalArgumentException(String.format("Cannot find stock (%s) to update", symbol));
 		managedStock.setPrice(entity.getPrice());
 		managedStock.setDescription(entity.getDescription());
+//		System.err.println("Before merge()...");
+//		entityManager.merge(managedStock);
+//		entityManager.flush();
+//		try {
+//			TimeUnit.SECONDS.sleep(12);
+//		} catch (InterruptedException e) {
+//		}
+//		System.err.println("After merge()...");
 		return managedStock;
 	}
 
