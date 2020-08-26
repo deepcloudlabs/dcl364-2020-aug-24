@@ -13,8 +13,14 @@ class StockViewModel {
                 description: this.description(),
                 price: Number(this.price())
             });
-        }
+        };
 
+        // SSE
+        this.eventSource = new EventSource("http://localhost:8080/stockmarket/api/v1/stocks/subscribe");
+        this.eventSource.addEventListener("stockPriceChangedEvent", (event) => {
+
+        });
+        // Websocket
         this.wsBase = 'ws://localhost:8080/stockmarket/changes';
         this.websocket = new WebSocket(this.wsBase);
 
@@ -22,7 +28,7 @@ class StockViewModel {
             console.log('Connected!');
             $.ajax({
                 method: 'GET',
-                url: 'http://localhost:8080/stockmarket/api/v1/stocks',
+                url: 'http://localhost:8080/stockmarket/api/v1/stocks?page=0&size=25',
                 success: (stocks) => {
                     stocks.forEach(stock => this.stockLookup[stock.symbol] = stock);
                 }
@@ -32,16 +38,16 @@ class StockViewModel {
             let e = JSON.parse(event.data);
             let stock = {
                 symbol: e.symbol,
-                description: "",
-                company: "",
-                price: e.oldPrice,
-                newPrice: e.newPrice
+                description: this.stockLookup[e.symbol].description,
+                company: this.stockLookup[e.symbol].company,
+                price: e.oldPrice.toFixed(2),
+                newPrice: e.newPrice.toFixed(2)
             };
-            let stocks = this.stocks().filter(source => source.symbol != stock.symbol);
+            let stocks = this.stocks().filter(source => source.symbol != e.symbol);
             stocks.push(stock);
 			this.stocks(stocks);
         };
-    }
+    };
 
     findStock = () => {
         $.ajax({
@@ -53,7 +59,7 @@ class StockViewModel {
                 this.description(stock.description);
             }
         });
-    }
+    };
 
     findAllStocks = () => {
         $.ajax({
@@ -75,7 +81,7 @@ class StockViewModel {
                 this.price(stock.price);
             }
         });
-    }
+    };
 
     addStock = () => {
         $.ajax({
@@ -98,4 +104,4 @@ class StockViewModel {
             }
         });
     };
-};
+}

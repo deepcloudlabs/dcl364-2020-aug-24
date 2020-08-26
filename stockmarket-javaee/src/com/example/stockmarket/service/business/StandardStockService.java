@@ -43,9 +43,9 @@ public class StandardStockService implements StockService {
 	@Override
 	@Transactional(value = TxType.REQUIRES_NEW)
 	public Stock update(Stock stock) {
-		var orcl = em.find(Stock.class, "orcl");
+		var currentStock = em.find(Stock.class, stock.getSymbol());
 		String symbol= stock.getSymbol();
-		double oldPrice= orcl.getPrice();
+		double oldPrice= currentStock.getPrice();
 		double newPrice= stock.getPrice();
 		var stockPriceChangedEvent = new StockPriceChangedEvent(symbol, oldPrice, newPrice);
 		event.fire(stockPriceChangedEvent );

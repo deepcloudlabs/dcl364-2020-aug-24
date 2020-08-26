@@ -1,7 +1,10 @@
 package com.example.stockmarket.controller;
 
 import java.util.List;
+import java.util.UUID;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,16 +15,32 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.sse.OutboundSseEvent;
+import javax.ws.rs.sse.Sse;
+import javax.ws.rs.sse.SseBroadcaster;
+import javax.ws.rs.sse.SseEventSink;
 
 import com.example.stockmarket.entity.Stock;
+import com.example.stockmarket.event.StockPriceChangedEvent;
 import com.example.stockmarket.service.StockService;
 
 // http://localhost:8080/stockmarket/api/v1/stocks
 @Path("/stocks")
+@ApplicationScoped
 public class StockRestController {
     @Inject private StockService stockService;
-    
+    private Sse sse;
+    private SseBroadcaster sseBroadcaster;
+    private OutboundSseEvent.Builder eventBuilder;
+
+    @Context
+    public void setSse(Sse sse) {
+        this.sse = sse;
+        this.eventBuilder = sse.newEventBuilder();
+        this.sseBroadcaster = sse.newBroadcaster();
+    }
     // http://localhost:8080/stockmarket/api/v1/stocks/orcl
 	// http://localhost:8080/stockmarket/api/v1/stocks/ibm
 	@GET
@@ -30,6 +49,26 @@ public class StockRestController {
 	public Stock findBySymbol(@PathParam("symbol") String symbol) {
 		return stockService.findStock(symbol);
 	}
+	
+	@GET
+	@Path("subscribe")
+	@Produces(MediaType.SERVER_SENT_EVENTS)
+	public void listen(@Context SseEventSink sseEventSink) {
+	    this.sseBroadcaster.register(sseEventSink);
+	}
+	
+	public void listenStockPriceChanges(@Observes StockPriceChangedEvent event) {
+		System.err.println("Event received: " + event);
+		OutboundSseEvent sseEvent = eventBuilder
+                .name("stockPriceChangedEvent")
+                .id(UUID.randomUUID().toString())
+                .mediaType(MediaType.APPLICATION_JSON_TYPE)
+                .data(StockPriceChangedEvent.class, event)
+                .reconnectDelay(3000)
+                .comment("price change")
+                .build();
+        sseBroadcaster.broadcast(sseEvent);
+     }
 	
 	// http://localhost:8080/stockmarket/api/v1/stocks?page=0&size=10
 	@GET
