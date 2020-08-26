@@ -3,6 +3,8 @@ package com.example.stockmarket.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 // Entity -> Identity : JPA -> ORM
@@ -10,6 +12,11 @@ import javax.persistence.Table;
 // Mapping -> JPA @nnotation, Convention over Configuration, Configuration by exception
 @Entity // must
 @Table(name= "stocks")
+@NamedQueries({
+	// JPQL (JPa Query Language)
+	@NamedQuery(name="Stock.findAll", query = "select s from Stock s"),
+	@NamedQuery(name="Stock.findByCompany", query = "select s from Stock s where s.company=:company")
+})
 public class Stock {
 	@Id // must
 	private String symbol; // identity
