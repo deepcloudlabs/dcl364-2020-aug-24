@@ -14,8 +14,8 @@ class StockViewModel {
                 price: Number(this.price())
             });
         }
-        /*
-        this.wsBase = 'ws://localhost:8080/stockmarket-websocket-0.0.1-SNAPSHOT/stockmarket';
+
+        this.wsBase = 'ws://localhost:8080/stockmarket/changes';
         this.websocket = new WebSocket(this.wsBase);
 
         this.websocket.onopen = (event) => {
@@ -32,17 +32,15 @@ class StockViewModel {
             let e = JSON.parse(event.data);
             let stock = {
                 symbol: e.symbol,
-                description: this.stockLookup[e.symbol].description,
-                company: this.stockLookup[e.symbol].company,
+                description: "",
+                company: "",
                 price: e.oldPrice,
                 newPrice: e.newPrice
             };
             let stocks = this.stocks().filter(source => source.symbol != stock.symbol);
             stocks.push(stock);
 			this.stocks(stocks);
-        }
-
-         */
+        };
     }
 
     findStock = () => {
