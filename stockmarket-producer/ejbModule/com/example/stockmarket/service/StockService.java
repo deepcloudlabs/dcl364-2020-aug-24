@@ -6,9 +6,7 @@ import javax.annotation.Resource;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.jms.Destination;
 import javax.jms.JMSContext;
-import javax.jms.Message;
 import javax.jms.Queue;
 import javax.json.Json;
 
@@ -17,32 +15,30 @@ import com.example.stockmarket.repository.StockRepository;
 
 @Stateless
 public class StockService {
-	@Inject private StockRepository stockRepo;
-	@Inject private JMSContext context;
+	@Inject
+	private StockRepository stockRepo;
+	@Inject
+	private JMSContext context;
 	@Resource(mappedName = "java:/jms/queue/stockQueue")
 	private Queue stockQueue;
-	
+
 	@Schedule(second = "*/5", hour = "*", minute = "*")
 	public void sendStockPriceChangedEvent() {
-		stockRepo.findAll(0, 25).forEach( stock -> {
+		stockRepo.findAll(0, 25).forEach(stock -> {
 			var symbol = stock.getSymbol();
-	    	var oldPrice = stock.getPrice();
+			var oldPrice = stock.getPrice();
 			var changeRatio = ThreadLocalRandom.current().nextDouble(-0.05, 0.05);
-			var newPrice = oldPrice * ( 1. + changeRatio);
-			stock.setPrice(newPrice );
+			var newPrice = oldPrice * (1. + changeRatio);
+			stock.setPrice(newPrice);
 			stockRepo.update(stock);
-			var event = new StockPriceChangedEvent(symbol, oldPrice, newPrice); 
-			System.err.println("Sending event to Queue "+event);
-            context.createProducer().send(stockQueue, createJson(event));
+			var event = new StockPriceChangedEvent(symbol, oldPrice, newPrice);
+			System.err.println("Sending event to Queue " + event);
+			context.createProducer().send(stockQueue, createJson(event));
 		});
 	}
 
 	private String createJson(StockPriceChangedEvent event) {
-		return Json.createObjectBuilder()
-			    .add("symbol", event.getSymbol())
-			    .add("oldPrice", event.getOldPrice())
-			    .add("newPrice", event.getNewPrice())
-			    .build()
-			    .toString();
+		return Json.createObjectBuilder().add("symbol", event.getSymbol()).add("oldPrice", event.getOldPrice())
+				.add("newPrice", event.getNewPrice()).build().toString();
 	}
 }
