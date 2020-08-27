@@ -1,8 +1,11 @@
 package com.example.stockmarket.controller;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -16,6 +19,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.OutboundSseEvent;
@@ -49,6 +54,8 @@ public class StockRestController {
 	private Sse sse;
 	private SseBroadcaster sseBroadcaster;
 	private OutboundSseEvent.Builder eventBuilder;
+	@Resource(mappedName = "java:jboss/ee/concurrency/executor/default")
+	private ManagedExecutorService executorService;
 
 	@Context
 	public void setSse(Sse sse) {
@@ -63,7 +70,7 @@ public class StockRestController {
 	@Path("/{symbol}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Stock findBySymbol(@PathParam("symbol") String symbol) {
-		System.err.println("StockRestController::findBySymbol -> "+Thread.currentThread().getName());
+		System.err.println("StockRestController::findBySymbol -> " + Thread.currentThread().getName());
 		return stockService.findStock(symbol);
 	}
 
@@ -85,15 +92,18 @@ public class StockRestController {
 	// http://localhost:8080/stockmarket/api/v1/stocks?page=0&size=10
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Stock> findAll(@QueryParam("page") int page, @QueryParam("size") int size) {
-		return stockService.findAll(page, size);
+	public void findAll(@QueryParam("page") int page, @QueryParam("size") int size,
+			@Suspended AsyncResponse asyncResponse) {
+		System.err.println(Thread.currentThread().getName() + " is running StockRestController::findAll");
+		executorService.execute(() -> asyncResponse.resume(stockService.findAll(page, size)));
 	}
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON) // Response Body: application/json
 	@Consumes(MediaType.APPLICATION_JSON) // Request Body: application/json
-	public Stock addStock(@Valid Stock stock) {
-		return stockService.add(stock);
+	public void addStock(@Valid Stock stock, @Suspended AsyncResponse asyncResponse) {
+		stockService.add(stock);
+		asyncResponse.resume(stock);
 	}
 
 	@PUT
@@ -107,7 +117,7 @@ public class StockRestController {
 	@Path("/{symbol}")
 	@Produces(MediaType.APPLICATION_JSON) // Response Body: application/json
 	public Stock deleteStock(@PathParam("symbol") String symbol) {
-		((Object)null).toString();
+		((Object) null).toString();
 		return stockService.delete(symbol);
 	}
 

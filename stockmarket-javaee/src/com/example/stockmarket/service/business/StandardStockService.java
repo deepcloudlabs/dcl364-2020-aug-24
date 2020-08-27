@@ -1,7 +1,9 @@
 package com.example.stockmarket.service.business;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -22,22 +24,24 @@ public class StandardStockService implements StockService {
 	@PersistenceContext
 	private EntityManager em;
 	@Inject
-    private Event<StockPriceChangedEvent> event;
-	
+	private Event<StockPriceChangedEvent> event;
+
 	@Override
 	public Stock findStock(String symbol) {
-		System.err.println("StandardStockService::findStock -> "+Thread.currentThread().getName());
+		System.err.println("StandardStockService::findStock -> " + Thread.currentThread().getName());
 		return stockRepo.findOne(symbol).orElseThrow(() -> new IllegalArgumentException("Cannot find stock"));
 	}
 
 	@Override
 	public List<Stock> findAll(int page, int size) {
+		System.err.println(Thread.currentThread().getName() + " is running StandardStockService::findAll");
 		return stockRepo.findAll(page, size);
 	}
 
 	@Override
-	@Transactional
-	public Stock add(Stock stock) {
+	@Transactional(value = TxType.NOT_SUPPORTED)
+	@Asynchronous
+	public Future<Stock> add(Stock stock) {
 		return stockRepo.create(stock);
 	}
 
@@ -45,11 +49,11 @@ public class StandardStockService implements StockService {
 	@Transactional(value = TxType.REQUIRES_NEW)
 	public Stock update(Stock stock) {
 		var currentStock = em.find(Stock.class, stock.getSymbol());
-		String symbol= stock.getSymbol();
-		double oldPrice= currentStock.getPrice();
-		double newPrice= stock.getPrice();
+		String symbol = stock.getSymbol();
+		double oldPrice = currentStock.getPrice();
+		double newPrice = stock.getPrice();
 		var stockPriceChangedEvent = new StockPriceChangedEvent(symbol, oldPrice, newPrice);
-		event.fire(stockPriceChangedEvent );
+		event.fireAsync(stockPriceChangedEvent);
 		return stockRepo.update(stock);
 	}
 

@@ -3,7 +3,10 @@ package com.example.stockmarket.repository.jpa;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Future;
 
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,10 +33,11 @@ public class JpaStockRepository implements StockRepository {
 	}
 
 	@Override
-	@Transactional(value = TxType.REQUIRED) // propagation (Spring Tx) -> Transaction Boundary
-	public Stock create(Stock stock) {
+	@Transactional(value = TxType.REQUIRES_NEW) // propagation (Spring Tx) -> Transaction Boundary
+	@Asynchronous
+	public Future<Stock> create(Stock stock) {
 		entityManager.persist(stock);
-		return stock;
+		return new AsyncResult<Stock>(stock);
 	}
 
 	// 1. Persistence Context (Heap) -> Managed Entity
