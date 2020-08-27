@@ -6,6 +6,10 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+import com.example.validation.StockSymbol;
 
 // Entity -> Identity : JPA -> ORM
 // JPA Provider -> Hibernate, EclipseLink (RI), OpenJPA, ...
@@ -19,10 +23,14 @@ import javax.persistence.Table;
 })
 public class Stock {
 	@Id // must
+	@StockSymbol
 	private String symbol; // identity
+	@NotNull
 	private String description;
+	@NotNull
 	private String company;
 	@Column(name="fiyat")
+	@Min(1)
 	private double price;
 	
 	public Stock() {

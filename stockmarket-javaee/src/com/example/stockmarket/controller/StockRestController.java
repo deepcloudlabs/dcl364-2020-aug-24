@@ -6,6 +6,7 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.websocket.OnOpen;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -93,14 +94,14 @@ public class StockRestController {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON) // Response Body: application/json
 	@Consumes(MediaType.APPLICATION_JSON) // Request Body: application/json
-	public Stock addStock(Stock stock) {
+	public Stock addStock(@Valid Stock stock) {
 		return stockService.add(stock);
 	}
 	
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON) // Response Body: application/json
 	@Consumes(MediaType.APPLICATION_JSON) // Request Body: application/json
-	public Stock updateStock(Stock stock) {
+	public Stock updateStock(@Valid Stock stock) {
 		return stockService.update(stock);
 	}
 	
