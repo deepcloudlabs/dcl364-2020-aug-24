@@ -5,10 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity // must
 @Table(name= "stocks")
 public class Stock {
 	@Id // must
+	//@JsonProperty
 	private String symbol; // identity
 	private String description;
 	private String company;
@@ -17,6 +20,14 @@ public class Stock {
 	
 	public Stock() {
 	}
+	
+	public Stock(String symbol, String description, String company, double price) {
+		this.symbol = symbol;
+		this.description = description;
+		this.company = company;
+		this.price = price;
+	}
+
 	public String getSymbol() {
 		return symbol;
 	}
