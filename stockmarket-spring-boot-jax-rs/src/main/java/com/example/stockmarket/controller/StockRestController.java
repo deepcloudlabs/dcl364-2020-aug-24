@@ -6,7 +6,6 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.websocket.OnOpen;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -26,18 +25,6 @@ import javax.ws.rs.sse.SseEventSink;
 import com.example.stockmarket.entity.Stock;
 import com.example.stockmarket.event.StockPriceChangedEvent;
 import com.example.stockmarket.service.StockService;
-
-// Dependency Injection Annotations used in Java EE
-// 1. @Inject (CDI) : Any class
-// 2. @PersistenceContext (JPA): EntityManager
-// 3. @Context (Jax-RS) -> Sse
-// 4. @EJB (EJB)
-// 5. @Resource (Managed resource: MailServer, DataSource, ThreadPool, Queue/Topic, ...)
- 
-// Dependency Injection Annotations used in Spring
-// 1. @Autowired ("Official")
-// 2. @Resource
-// 3. @Inject (CDI)
 
 // http://localhost:8080/stockmarket/api/v1/stocks
 @Path("/stocks")
