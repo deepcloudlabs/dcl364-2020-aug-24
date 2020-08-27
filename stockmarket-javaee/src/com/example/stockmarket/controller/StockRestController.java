@@ -63,6 +63,7 @@ public class StockRestController {
 	@Path("/{symbol}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Stock findBySymbol(@PathParam("symbol") String symbol) {
+		System.err.println("StockRestController::findBySymbol -> "+Thread.currentThread().getName());
 		return stockService.findStock(symbol);
 	}
 

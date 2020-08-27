@@ -26,6 +26,7 @@ public class StandardStockService implements StockService {
 	
 	@Override
 	public Stock findStock(String symbol) {
+		System.err.println("StandardStockService::findStock -> "+Thread.currentThread().getName());
 		return stockRepo.findOne(symbol).orElseThrow(() -> new IllegalArgumentException("Cannot find stock"));
 	}
 
