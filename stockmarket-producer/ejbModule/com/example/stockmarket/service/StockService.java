@@ -13,6 +13,14 @@ import javax.json.Json;
 import com.example.stockmarket.event.StockPriceChangedEvent;
 import com.example.stockmarket.repository.StockRepository;
 
+//standalone-full.xml:
+//<subsystem xmlns="urn:jboss:domain:messaging-activemq:10.0">
+//<server name="default">
+//  . . .
+//  <jms-queue name="stockQueue" entries="java:/jms/queue/stockQueue"/>
+//  . . .
+//</server>
+//</subsystem>
 @Stateless
 public class StockService {
 	@Inject
