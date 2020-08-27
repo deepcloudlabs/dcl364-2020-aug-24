@@ -3,7 +3,7 @@ package com.example.stockmarket.dto;
 public class Stock {
 	private String symbol;
 	private String description;
-	private String comapny;
+	private String company;
 	private double price;
 
 	public Stock() {
@@ -25,12 +25,12 @@ public class Stock {
 		this.description = description;
 	}
 
-	public String getComapny() {
-		return comapny;
+	public String getCompany() {
+		return company;
 	}
 
-	public void setComapny(String comapny) {
-		this.comapny = comapny;
+	public void setCompany(String comapny) {
+		this.company = comapny;
 	}
 
 	public double getPrice() {
@@ -43,7 +43,7 @@ public class Stock {
 
 	@Override
 	public String toString() {
-		return "Stock [symbol=" + symbol + ", description=" + description + ", comapny=" + comapny + ", price=" + price
+		return "Stock [symbol=" + symbol + ", description=" + description + ", company=" + company + ", price=" + price
 				+ "]";
 	}
 
