@@ -32,6 +32,7 @@ public class StockService {
 			stock.setPrice(newPrice );
 			stockRepo.update(stock);
 			var event = new StockPriceChangedEvent(symbol, oldPrice, newPrice); 
+			System.err.println("Sending event to Queue "+event);
             context.createProducer().send(stockQueue, createJson(event));
 		});
 	}
