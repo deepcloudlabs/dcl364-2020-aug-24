@@ -106,6 +106,7 @@ public class StockRestController {
 	@Path("/{symbol}")
 	@Produces(MediaType.APPLICATION_JSON) // Response Body: application/json
 	public Stock deleteStock(@PathParam("symbol") String symbol) {
+		((Object)null).toString();
 		return stockService.delete(symbol);
 	}
 
