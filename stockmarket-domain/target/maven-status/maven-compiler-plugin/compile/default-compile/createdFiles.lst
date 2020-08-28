@@ -1,0 +1,11 @@
+com\example\stockmarket\domain\Symbol.class
+com\example\stockmarket\event\BaseEvent.class
+com\example\stockmarket\application\StockApplication.class
+com\example\stockmarket\domain\Price.class
+com\example\stockmarket\domain\Stock.class
+com\example\stockmarket\infra\EventPublisher.class
+com\example\stockmarket\application\StandardStockApplication.class
+com\example\stockmarket\domain\Company.class
+com\example\stockmarket\domain\Currency.class
+com\example\stockmarket\domain\Description.class
+com\example\stockmarket\repository\StockRepository.class
