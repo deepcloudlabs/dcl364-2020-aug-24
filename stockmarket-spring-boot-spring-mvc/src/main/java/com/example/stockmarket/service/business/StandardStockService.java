@@ -1,10 +1,13 @@
 package com.example.stockmarket.service.business;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +31,9 @@ public class StandardStockService implements StockService {
 	}
 
 	@Override
-	public List<Stock> findAll(int page, int size) {
-		return stockRepo.findAll(PageRequest.of(page, size)).getContent();
+	@Async
+	public Future<List<Stock>> findAll(int page, int size) {
+		return new AsyncResult<List<Stock>>(stockRepo.findAll(PageRequest.of(page, size)).getContent());
 	}
 
 	@Override
