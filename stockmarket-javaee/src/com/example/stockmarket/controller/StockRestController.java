@@ -54,7 +54,8 @@ public class StockRestController {
 	private Sse sse;
 	private SseBroadcaster sseBroadcaster;
 	private OutboundSseEvent.Builder eventBuilder;
-	@Resource(mappedName = "java:jboss/ee/concurrency/executor/default")
+	// jndi api (Java SE) -> directory server (open ldap, active directory, ..)
+	@Resource(mappedName = "java:jboss/ee/concurrency/executor/default") 
 	private ManagedExecutorService executorService;
 
 	@Context
