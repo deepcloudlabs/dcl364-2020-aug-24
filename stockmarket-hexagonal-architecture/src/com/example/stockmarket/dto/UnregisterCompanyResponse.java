@@ -2,8 +2,6 @@ package com.example.stockmarket.dto;
 
 import java.util.List;
 
-import com.example.stockmarket.domain.Symbol;
-
 public class UnregisterCompanyResponse {
 	private String status;
 	private String url;
