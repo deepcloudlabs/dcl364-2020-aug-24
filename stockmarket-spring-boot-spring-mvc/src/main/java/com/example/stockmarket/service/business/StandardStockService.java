@@ -1,13 +1,12 @@
 package com.example.stockmarket.service.business;
 
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +22,8 @@ public class StandardStockService implements StockService {
 	private StockRepository stockRepo;
 
 	@Autowired
-    private ApplicationEventPublisher publisher;
-	
+	private ApplicationEventPublisher publisher;
+
 	@Override
 	public Stock findStock(String symbol) {
 		return stockRepo.findById(symbol).orElseThrow(() -> new IllegalArgumentException("Cannot find stock"));
@@ -32,8 +31,8 @@ public class StandardStockService implements StockService {
 
 	@Override
 	@Async
-	public Future<List<Stock>> findAll(int page, int size) {
-		return new AsyncResult<List<Stock>>(stockRepo.findAll(PageRequest.of(page, size)).getContent());
+	public CompletableFuture<List<Stock>> findAll(int page, int size) {
+		return CompletableFuture.supplyAsync(() -> stockRepo.findAll(PageRequest.of(page, size)).getContent());
 	}
 
 	@Override
@@ -46,9 +45,9 @@ public class StandardStockService implements StockService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Stock update(Stock stock) {
 		var currentStock = stockRepo.findById(stock.getSymbol());
-		String symbol= stock.getSymbol();
-		double oldPrice= currentStock.get().getPrice();
-		double newPrice= stock.getPrice();
+		String symbol = stock.getSymbol();
+		double oldPrice = currentStock.get().getPrice();
+		double newPrice = stock.getPrice();
 		var stockPriceChangedEvent = new StockPriceChangedEvent(symbol, oldPrice, newPrice);
 		publisher.publishEvent(stockPriceChangedEvent);
 		return stockRepo.save(stock);
@@ -57,7 +56,7 @@ public class StandardStockService implements StockService {
 	@Override
 	@Transactional
 	public Stock delete(String symbol) {
-		var managedStock= stockRepo.findById(symbol);
+		var managedStock = stockRepo.findById(symbol);
 		if (managedStock.isEmpty())
 			throw new IllegalArgumentException("Cannot find stock to delete");
 		Stock stock = managedStock.get();
