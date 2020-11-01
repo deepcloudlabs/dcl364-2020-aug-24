@@ -32,8 +32,7 @@ public class ImdbResource {
 		try {
 			TimeUnit.SECONDS.sleep(5);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 		return 42;
 	}

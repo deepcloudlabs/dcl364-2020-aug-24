@@ -18,13 +18,13 @@ class StockViewModel {
         // SSE
         this.eventSource = new EventSource("http://localhost:8080/stockmarket/api/v1/stocks/subscribe");
         this.eventSource.addEventListener("stockPriceChangedEvent", (event) => {
-
+          console.log(event)
         });
         // Websocket
         this.wsBase = 'ws://localhost:8080/stockmarket/changes';
         this.websocket = new WebSocket(this.wsBase);
 
-        this.websocket.onopen = (event) => {
+        this.websocket.onopen = () => {
             console.log('Connected!');
             $.ajax({
                 method: 'GET',
@@ -47,9 +47,9 @@ class StockViewModel {
             stocks.push(stock);
 			this.stocks(stocks);
         };
-    };
+    }
 
-    findStock = () => {
+    findStock() {
         $.ajax({
             method: 'GET',
             url: 'http://localhost:8080/stockmarket/api/v1/stocks/' + this.symbol(),
@@ -61,7 +61,7 @@ class StockViewModel {
         });
     };
 
-    findAllStocks = () => {
+    findAllStocks() {
         $.ajax({
             method: 'GET',
             url: 'http://localhost:8080/stockmarket/api/v1/stocks?page=0&size=25',
@@ -72,7 +72,7 @@ class StockViewModel {
         });
     };
 
-    removeStock = () => {
+    removeStock(){
         $.ajax({
             method: 'DELETE',
             url: 'http://localhost:8080/stockmarket/api/v1/stocks/' + this.symbol(),
@@ -83,25 +83,27 @@ class StockViewModel {
         });
     };
 
-    addStock = () => {
+    addStock(){
         $.ajax({
             method: 'POST',
             url: 'http://localhost:8080/stockmarket/api/v1/stocks',
             contentType: 'application/json',
             data: this.toJson(),
             success: (stock) => {
+               console.log(stock)
             }
         });
     };
 
-    updateStock = () => {
+    updateStock() {
         $.ajax({
             method: 'PUT',
             url: 'http://localhost:8080/stockmarket/api/v1/stocks',
             contentType: 'application/json',
             data: this.toJson(),
             success: (stock) => {
+               console.log(stock);
             }
         });
-    };
+    }
 }
